@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Регистрация</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+<section class="vh-100" style="background-color: #eee;">
+  <div class="container h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-lg-12 col-xl-11">
+        <div class="card text-black rounded-4">
+          <div class="card-body p-5">
+            <div class="row justify-content-center">
+              <!-- Левая часть — форма -->
+              <div class="col-md-10 col-lg-6 col-xl-5">
+                <h1 class="text-center fw-bold mb-5 mt-4">Регистрация</h1>
+                
+                {% set message = message if message is defined else None %}
+                {% set error = error if error is defined else None %}
+
+                <form action="/register" method="post">
+
+                  {{ form.csrf_token }}
+                  
+                  {% if form.name.data %}
+                    {% set name = form.name.data %}
+                  {% endif %}
+                  
+                  {% if form.email.data %}
+                    {% set email = form.email.data %}
+                  {% endif %}
+
+                  <!-- Имя -->
+                  <div class="mb-4">
+                    <label for="name" class="form-label">Ваше имя</label>
+                    <input type="text" id="name" class="form-control" name="name" value="{{ name }}" required>
+                  </div>
+                  
+                  <!-- Email -->
+                  <div class="mb-4">
+                    <label for="email" class="form-label">Ваш Email</label>
+                    <input type="email" id="email" class="form-control" name="email" value="{{ email }}" required>
+                  </div>
+
+                  <!-- Пароль -->
+                  <div class="mb-4">
+                    <label for="password" class="form-label">Пароль</label>
+                    <input type="password" id="password" class="form-control" name="password" required>
+                  </div>
+
+                  <!-- Повтор пароля -->
+                  <div class="mb-4">
+                    <label for="password_again" class="form-label">Повторите пароль</label>
+                    <input type="password" id="password_again" class="form-control" name="password_again" required>
+                  </div>
+
+                  {% if message or error %}
+                  <!-- Модальное окно -->
+                  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h1 class="modal-title fs-5" id="staticBackdropLabel">{{ message }}</h1>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                        </div>
+                        <div class="modal-body">
+                          {{ error }}
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Ок</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Скрипт на показ модалки -->
+                  <script>
+                    var myModal = new bootstrap.Modal(document.getElementById('staticBackdrop'));
+                    myModal.show();
+                  </script>
+                  {% endif %}
+
+
+                  <!-- Чекбокс -->
+                  <div class="form-check d-flex justify-content-center mb-4">
+                    <input class="form-check-input me-2" type="checkbox" value="" id="termsCheck" required>
+                    <label class="form-check-label" for="termsCheck">
+                      Я согласен с <a href="#">условиями сервиса</a>
+                    </label>
+                  </div>
+
+                  <!-- Кнопка -->
+                  <div class="d-flex justify-content-center mb-4">
+                    <button type="submit" class="btn btn-primary btn-lg">Зарегистрироваться</button>
+                  </div>
+                  
+                  <div class="">
+                    <p>
+                      Уже есть аккаунт? <a href="/login" class="text-decoration-none">Войти</a>
+                    </p>
+
+                  </div>
+
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</body>
+</html>
