@@ -25,6 +25,7 @@
                 <form action="/register" method="post">
 
                   {{ form.csrf_token }}
+                  {{ form.hidden_tag() }}
                   
                   {% if form.name.data %}
                     {% set name = form.name.data %}
