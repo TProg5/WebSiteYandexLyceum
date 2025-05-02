@@ -1,5 +1,3 @@
-from quart import Quart
-
 from flask import Flask
 from flask import render_template
 from flask import redirect
@@ -19,7 +17,7 @@ from database.requests.user_requests import (
 )
 
 
-from database.requests.user_requests import login_manager
+from database.requests.user_requests import login_manager, load_user
 
 
 app = Flask(__name__)
@@ -28,20 +26,20 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Нужно для flash-сообщений и сессий
 
 
-app.route("/main")
+@app.route('/main', methods=['GET'])
 def main():
-    return render_template("info.html")
+    return render_template("index.html")
 
 
 @app.route('/dashboard')
-@login_required
-async def dashboard():
-    if await current_user.is_authenticated:
-        return await current_user.email
+def dashboard():
+    if current_user.is_authenticated:
+        return render_template("info.html", current_user=current_user)
 
+    return render_template("info.html")
 
 @app.route('/register', methods=['GET', 'POST'])
-async def register():
+def register():
     form = RegisterForm()
     
     print(form.email.data)
@@ -69,7 +67,7 @@ async def register():
         email: str = form.email.data
         
         # проверка на существование почты
-        if await check_email(email=email):
+        if check_email(email=email):
             return render_template(
                 "register.html", 
                 message="Ошибка регистрации", 
@@ -77,7 +75,7 @@ async def register():
                 form=form
             )
     
-        await add_user(
+        add_user(
             username=name,
             email=email,
             hashed_password=password
@@ -95,13 +93,13 @@ async def register():
 
 
 @app.route("/login", methods=['GET', 'POST'])
-async def log_in():
+def log_in():
     form = LoginForm()
     if form.validate_on_submit():
         print("checkpoint - 1")
         email = form.email.data
 
-        user = await returning_info_to_login(email=email)
+        user = returning_info_to_login(email=email)
 
         print("checkpoint - 2")
         if user:

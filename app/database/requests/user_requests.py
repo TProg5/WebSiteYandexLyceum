@@ -3,7 +3,7 @@ from sqlalchemy.engine import Result
 
 from database.models.users_model import Users
 
-from database.engine import async_session
+from database.sync_engine import session
 
 
 from flask import Flask
@@ -14,8 +14,7 @@ from utils.password_utils import check_password
 login_manager = LoginManager()
 
 
-
-async def add_user(
+def add_user(
     username: str, 
     email: str, 
     hashed_password: str
@@ -23,9 +22,9 @@ async def add_user(
 ) -> int:
     """Функция для добавления нового пользователя в Базу Данных"""
 
-    async with async_session() as session:
-        async with session.begin():
-            result: Result = await session.execute(
+    with session() as db_session:
+        with db_session.begin():
+            result: Result = db_session.execute(
                 insert(Users)
                 .values(
                     username=username,
@@ -40,13 +39,13 @@ async def add_user(
             return new_id
         
 
-async def check_email(
+def check_email(
     email: str
 ) -> bool:
     """Функция для проверки на существование `Email` в Базе данных"""
-    async with async_session() as session:
-        async with session.begin():
-            result: Result = await session.execute(
+    with session() as db_session:
+        with db_session.begin():
+            result: Result = db_session.execute(
                 select(Users)
                 .where(Users.email == email)
             )
@@ -54,13 +53,13 @@ async def check_email(
             return bool(result.scalar_one_or_none())
 
 
-async def returning_info_to_login(
+def returning_info_to_login(
         email: str
 ) -> None:
     
-    async with async_session() as session:
-        async with session.begin():
-            result = await session.execute(
+    with session() as db_session:
+        with db_session.begin():
+            result = db_session.execute(
                 select(Users)
                 .where(Users.email == email)
             )
@@ -80,9 +79,10 @@ async def returning_info_to_login(
             return None
 
 
-async def get_user_data(email: str) -> None:
+def get_user_data(email: str) -> None:
     pass
 
 @login_manager.user_loader
-async def login_user(user_id: int) -> None:
-    pass
+def load_user(user_id):
+    with session() as db_session:
+        return db_session.query(Users).get(user_id)
