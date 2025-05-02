@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker, AsyncSession,
     AsyncEngine
 )
-
+     
 load_dotenv()
 
 DATABASE_URL: Optional[str] = os.getenv("DATABASE_URL")
