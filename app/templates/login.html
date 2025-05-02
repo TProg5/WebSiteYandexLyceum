@@ -21,6 +21,9 @@
 
                 <form action="/login" method="post">
 
+                  {{ form.csrf_token }}
+                  {{ form.hidden_tag() }}
+                  
                   <!-- Email -->
                   <div class="mb-4">
                     <label for="email" class="form-label">Ваш Email</label>
@@ -37,7 +40,43 @@
                   <div class="d-flex justify-content-center mb-4">
                     <button type="submit" class="btn btn-primary btn-lg">Войти</button>
                   </div>
+
                   
+                  <!-- Чекбокс -->
+                  <div class="form-check d-flex justify-content-center mb-4">
+                    <input class="form-check-input me-2" type="checkbox" value="" id="remember_me" name="remember_me" required>
+                    <label class="form-check-label" for="remember_me">
+                      Запомнить меня
+                    </label>
+                  </div>
+
+                  {% if message or error %}
+                  <!-- Модальное окно -->
+                  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h1 class="modal-title fs-5" id="staticBackdropLabel">{{ message }}</h1>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                        </div>
+                        <div class="modal-body">
+                          {{ error }}
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Ок</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Скрипт на показ модалки -->
+                  <script>
+                    var myModal = new bootstrap.Modal(document.getElementById('staticBackdrop'));
+                    myModal.show();
+                  </script>
+                  {% endif %}
+
                   <div class="">
                     <p>
                       Еще нет аккаунта? <a href="/register" class="text-decoration-none">Зарегистрироваться</a>

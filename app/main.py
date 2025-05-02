@@ -1,3 +1,5 @@
+from quart import Quart
+
 from flask import Flask
 from flask import render_template
 from flask import redirect
@@ -5,11 +7,16 @@ from flask import session
 from flask import request, make_response
 
 from flask_login import login_required, logout_user
+from flask_login import login_user, current_user
 
 from forms.register_form import RegisterForm
 from forms.login_form import LoginForm
 
-from database.requests.user_requests import add_user, check_email
+
+from database.requests.user_requests import (
+    add_user, check_email,
+    returning_info_to_login
+)
 
 
 from database.requests.user_requests import login_manager
@@ -20,9 +27,17 @@ app = Flask(__name__)
 
 app.secret_key = 'your_secret_key'  # Нужно для flash-сообщений и сессий
 
-app.route("/")
+
+app.route("/main")
 def main():
-    return "Главная страница"
+    return render_template("info.html")
+
+
+@app.route('/dashboard')
+@login_required
+async def dashboard():
+    if await current_user.is_authenticated:
+        return await current_user.email
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -69,7 +84,7 @@ async def register():
         )
         
         print("TRue")
-        # Всё прошло — регистрируем
+ 
         return redirect('/login')
 
     session.pop('message', None)
@@ -79,11 +94,29 @@ async def register():
     return render_template('register.html', form=form)
 
 
-@app.route("/login")
-def log_in():
+@app.route("/login", methods=['GET', 'POST'])
+async def log_in():
     form = LoginForm()
     if form.validate_on_submit():
-        pass
+        print("checkpoint - 1")
+        email = form.email.data
+
+        user = await returning_info_to_login(email=email)
+
+        print("checkpoint - 2")
+        if user:
+            print("checkpoint - 3")
+            login_user(user=user, remember=form.remember_me.data)
+            print("checkpoint - 4")
+
+            return redirect("/dashboard")
+
+        return render_template(
+            'login.html',
+            message="Ошибка Авторизации",
+            error="Неправильный логин или пароль",
+            form=form
+        )
 
     return render_template("login.html", form=form)
 
@@ -93,11 +126,6 @@ def log_in():
 def logout():
     logout_user()
     return redirect("/")
-
-
-@app.route("/main")
-def main_page():
-    return "You login"
 
 
 def main(app: Flask) -> None:
