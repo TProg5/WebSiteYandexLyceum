@@ -3,41 +3,46 @@ from flask import render_template
 from flask import redirect
 from flask import session
 from flask import request, make_response
+from flask import url_for, abort
 
 from flask_login import login_required, logout_user
 from flask_login import login_user, current_user
 
-from forms.register_form import RegisterForm
-from forms.login_form import LoginForm
+from app.forms.register_form import RegisterForm
+from app.forms.login_form import LoginForm
 
-
-from database.requests.user_requests import (
+from app.database.requests.user_requests import (
     add_user, check_email,
     returning_info_to_login
 )
 
 
-from database.requests.user_requests import login_manager, load_user
+from app.database.requests.user_requests import login_manager, load_user
 
+from app.auto_api import auto
+
+
+from waitress import serve
 
 app = Flask(__name__)
 
+app.secret_key = 'your_secret_key'
 
-app.secret_key = 'your_secret_key'  # Нужно для flash-сообщений и сессий
+@app.route("/")
 
-
-@app.route('/main', methods=['GET'])
+@app.route("/", methods=["GET", "POST"])
 def main():
-    return render_template("index.html")
 
-
-@app.route('/dashboard')
-def dashboard():
     if current_user.is_authenticated:
-        return render_template("info.html", current_user=current_user)
+        return render_template(
+            "main_page.html", 
+            current_user=current_user
+        )
+    
+    return render_template("main_page.html")
 
-    return render_template("info.html")
 
+# Функция для регистрации аккаунта, никак не изменяем
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
@@ -88,26 +93,21 @@ def register():
     session.pop('message', None)
     session.pop('error', None)
 
-    # Если что-то не так — форма с ошибками будет показана снова
     return render_template('register.html', form=form)
 
 
+# Функция для входа в аккаунт, никак не изменяем
 @app.route("/login", methods=['GET', 'POST'])
 def log_in():
     form = LoginForm()
     if form.validate_on_submit():
-        print("checkpoint - 1")
         email = form.email.data
 
         user = returning_info_to_login(email=email)
 
-        print("checkpoint - 2")
         if user:
-            print("checkpoint - 3")
             login_user(user=user, remember=form.remember_me.data)
-            print("checkpoint - 4")
-
-            return redirect("/dashboard")
+            return redirect("/")
 
         return render_template(
             'login.html',
@@ -126,11 +126,41 @@ def logout():
     return redirect("/")
 
 
-def main(app: Flask) -> None:
-    login_manager.init_app(app=app)
+@app.route('/dashboard')
+def dashboard():
+    if current_user.is_authenticated:
+        return render_template("info.html", current_user=current_user)
 
-    app.run(port=8080, host="127.0.0.1", debug=True)
+    return render_template("info.html")
+
+
+@app.route("/search-car", methods=["POST"])
+def search_car():
+    brand = request.form.get("brand")
+    model = request.form.get("model")
+
+    if not brand or not model:
+        abort(400, "Марка и модель обязательны")
+
+    return redirect(url_for('auto.get_auto_detail', brand=brand.lower(), model=model.lower()))
+
+
+@app.route("/disclaimer", methods=["GET"])
+def disclaimer():
+    return render_template("disclaimer.html")
+
+
+@app.template_filter('format_price')
+def format_price(value):
+    if value is None:
+        return ""
+    return f"{int(value):,}".replace(",", " ")
 
 
 if __name__ == "__main__":
-    main(app=app)
+    login_manager.init_app(app=app)
+    app.register_blueprint(auto)
+
+    serve(app=app, port=8080, host="127.0.0.1")
+    # port = int(os.environ.get("PORT", 8080))
+    # app.run(host='0.0.0.0', port=port, debug=True)

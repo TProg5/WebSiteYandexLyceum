@@ -11,7 +11,7 @@ from sqlalchemy import (
 
 from flask_login import UserMixin
 
-from database.sync_engine import Base
+from app.database.sync_engine import Base
 
 
 class Users(Base, UserMixin): 

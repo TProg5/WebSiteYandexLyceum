@@ -18,7 +18,7 @@ if SYNC_DATABASE_URL is None:
 
 
 engine: Engine = create_engine(url=SYNC_DATABASE_URL)
-session: sessionmaker[Session] = sessionmaker(bind=engine)
+sync_session: sessionmaker[Session] = sessionmaker(bind=engine)
 
 class Base(DeclarativeBase):
     pass
