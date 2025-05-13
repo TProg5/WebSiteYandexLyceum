@@ -16,7 +16,7 @@ from flask_login import UserMixin
 
 from sqlalchemy_serializer import SerializerMixin
 
-from database.sync_engine import Base
+from app.database.sync_engine import Base
 
 
 class Cars(Base, UserMixin, SerializerMixin): 
@@ -32,7 +32,9 @@ class Cars(Base, UserMixin, SerializerMixin):
     color: Mapped[str] = mapped_column(String)
     seats: Mapped[int] = mapped_column(Integer)
     doors: Mapped[int] = mapped_column(Integer)
- 
+    new_cost: Mapped[float] = mapped_column(Float, nullable=True)
+    old_cost: Mapped[float] = mapped_column(Float, nullable=True)
+    
     model_id: Mapped[int] = mapped_column(ForeignKey("models.id"), nullable=False)
     model = relationship("Models", back_populates='cars')
 

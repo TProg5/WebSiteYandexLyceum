@@ -1,15 +1,13 @@
 from sqlalchemy import insert, select
 from sqlalchemy.engine import Result
 
-from database.models.users_model import Users
+from app.database.models.users_model import Users
 
-from database.sync_engine import session
+from app.database.sync_engine import sync_session
 
 
 from flask import Flask
 from flask_login import LoginManager
-
-from utils.password_utils import check_password
 
 login_manager = LoginManager()
 
@@ -22,9 +20,9 @@ def add_user(
 ) -> int:
     """Функция для добавления нового пользователя в Базу Данных"""
 
-    with session() as db_session:
-        with db_session.begin():
-            result: Result = db_session.execute(
+    with sync_session() as session:
+        with session.begin():
+            result: Result = session.execute(
                 insert(Users)
                 .values(
                     username=username,
@@ -43,9 +41,9 @@ def check_email(
     email: str
 ) -> bool:
     """Функция для проверки на существование `Email` в Базе данных"""
-    with session() as db_session:
-        with db_session.begin():
-            result: Result = db_session.execute(
+    with sync_session() as session:
+        with session.begin():
+            result: Result = session.execute(
                 select(Users)
                 .where(Users.email == email)
             )
@@ -57,9 +55,9 @@ def returning_info_to_login(
         email: str
 ) -> None:
     
-    with session() as db_session:
-        with db_session.begin():
-            result = db_session.execute(
+    with sync_session() as session:
+        with session.begin():
+            result = session.execute(
                 select(Users)
                 .where(Users.email == email)
             )
@@ -84,5 +82,5 @@ def get_user_data(email: str) -> None:
 
 @login_manager.user_loader
 def load_user(user_id):
-    with session() as db_session:
-        return db_session.query(Users).get(user_id)
+    with sync_session() as session:
+        return session.query(Users).get(user_id)

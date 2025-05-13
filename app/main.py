@@ -3,27 +3,32 @@ from flask import render_template
 from flask import redirect
 from flask import session
 from flask import request, make_response
+from flask import url_for, abort
 
 from flask_login import login_required, logout_user
 from flask_login import login_user, current_user
 
-from forms.register_form import RegisterForm
-from forms.login_form import LoginForm
+from app.forms.register_form import RegisterForm
+from app.forms.login_form import LoginForm
 
-from database.requests.user_requests import (
+from app.database.requests.user_requests import (
     add_user, check_email,
     returning_info_to_login
 )
 
 
-from database.requests.user_requests import login_manager, load_user
+from app.database.requests.user_requests import login_manager, load_user
 
+from app.auto_api import auto
+
+
+from waitress import serve
 
 app = Flask(__name__)
 
-
 app.secret_key = 'your_secret_key'
 
+@app.route("/")
 
 @app.route("/", methods=["GET", "POST"])
 def main():
@@ -128,11 +133,34 @@ def dashboard():
 
     return render_template("info.html")
 
-def main(app: Flask) -> None:
-    login_manager.init_app(app=app)
 
-    app.run(port=8080, host="127.0.0.1", debug=True)
+@app.route("/search-car", methods=["POST"])
+def search_car():
+    brand = request.form.get("brand")
+    model = request.form.get("model")
+
+    if not brand or not model:
+        abort(400, "Марка и модель обязательны")
+
+    return redirect(url_for('auto.get_auto_detail', brand=brand.lower(), model=model.lower()))
+
+
+@app.route("/disclaimer", methods=["GET"])
+def disclaimer():
+    return render_template("disclaimer.html")
+
+
+@app.template_filter('format_price')
+def format_price(value):
+    if value is None:
+        return ""
+    return f"{int(value):,}".replace(",", " ")
 
 
 if __name__ == "__main__":
-    main(app=app)
+    login_manager.init_app(app=app)
+    app.register_blueprint(auto)
+
+    serve(app=app, port=8080, host="127.0.0.1")
+    # port = int(os.environ.get("PORT", 8080))
+    # app.run(host='0.0.0.0', port=port, debug=True)

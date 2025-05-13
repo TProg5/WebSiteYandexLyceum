@@ -12,7 +12,6 @@
     {% block style%}{% endblock %}
 </head>
 <body>
-
     <!-- Custom styles for this template -->
     <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
       <symbol id="check2" viewBox="0 0 16 16">
@@ -66,10 +65,12 @@
         </ul>
       </div>
     
-    <!-- Главная Панелька Сайта-->
+
+    <!-- ЛИПКАЯ МЕНЮ-ПАНЕЛЬ САЙТА
+    ========================================================================================= -->
     <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark" aria-label="Fifth navbar example">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#">CarDealer</a>
+        <a class="navbar-brand" href="#">PremiumDrive</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample05" aria-controls="navbarsExample05" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -79,17 +80,19 @@
             <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="/">Home</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Link</a>
-            </li>
+
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">Cars</a>
               <ul class="dropdown-menu">                
                 <li><a class="dropdown-item" href="#SearchCar">Search</a></li>
-                <li><a class="dropdown-item" href="#">Models</a></li>
-                <li><a class="dropdown-item" href="#">Brands</a></li>
+                <li><a class="dropdown-item" href="/auto/album">Album</a></li>
               </ul>
             </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="/disclaimer">Disclaimer</a>
+            </li>
+
           </ul>
 
           {% if current_user.is_authenticated %}
@@ -117,64 +120,70 @@
         </div>
       </div>
     </nav>
-    
+    <!-- КОНЕЦ ЛИПКОЙ МЕНЮ-ПАНЕЛИ САЙТА
+    ========================================================================================= -->
 
-    <!-- Контент -->
-    {% block content %}{% endblock %}
+
+    <!-- БЛОК ДЛЯ КОНЕНТА
+    ========================================================================================= -->
     
-    <!-- Поиск Авто -->
+    {% block content %}
+    {% endblock %}
+    
+    <!-- КОНЕЦ БЛОКА ДЛЯ КОНТЕНТА
+    ========================================================================================= -->
     
 
     <footer class="container py-5">
       <div class="row">
         <div class="col-12 col-md">
-          <small class="d-block mb-3 text-body-secondary">&copy; 2017–2024</small>
+          <strong class="d-block mb-2">Автоцентр «PremiumDrive»</strong>
+          <small class="d-block mb-3 text-body-secondary">&copy; 2017–2024 Все права защищены</small>
         </div>
+        
         <div class="col-6 col-md">
-          <h5>Features</h5>
+          <h5>Модели</h5>
           <ul class="list-unstyled text-small">
-            <li><a class="link-secondary text-decoration-none" href="#">Cool stuff</a></li>
-            <li><a class="link-secondary text-decoration-none" href="#">Random feature</a></li>
-            <li><a class="link-secondary text-decoration-none" href="#">Team feature</a></li>
-            <li><a class="link-secondary text-decoration-none" href="#">Stuff for developers</a></li>
-            <li><a class="link-secondary text-decoration-none" href="#">Another one</a></li>
-            <li><a class="link-secondary text-decoration-none" href="#">Last time</a></li>
+            <li><a class="link-secondary text-decoration-none" href="/auto/audi/a8">Audi A8</a></li>
+            <li><a class="link-secondary text-decoration-none" href="/auto/bmw/x5">BMW X5</a></li>
+            <li><a class="link-secondary text-decoration-none" href="#">Mercedes S-Class</a></li>
+            <li><a class="link-secondary text-decoration-none" href="#">Porsche Panamera</a></li>
           </ul>
         </div>
+
         <div class="col-6 col-md">
-          <h5>Resources</h5>
+          <h5>Услуги</h5>
           <ul class="list-unstyled text-small">
-            <li><a class="link-secondary text-decoration-none" href="#">Resource name</a></li>
-            <li><a class="link-secondary text-decoration-none" href="#">Resource</a></li>
-            <li><a class="link-secondary text-decoration-none" href="#">Another resource</a></li>
-            <li><a class="link-secondary text-decoration-none" href="#">Final resource</a></li>
+            <li><a class="link-secondary text-decoration-none" href="#">Тест-драйв</a></li>
+            <li><a class="link-secondary text-decoration-none" href="#">Trade-in</a></li>
+            <li><a class="link-secondary text-decoration-none" href="#">Автокредит</a></li>
+            <li><a class="link-secondary text-decoration-none" href="#">Страхование</a></li>
           </ul>
         </div>
+
         <div class="col-6 col-md">
-          <h5>Resources</h5>
+          <h5>О компании</h5>
           <ul class="list-unstyled text-small">
-            <li><a class="link-secondary text-decoration-none" href="#">Business</a></li>
-            <li><a class="link-secondary text-decoration-none" href="#">Education</a></li>
-            <li><a class="link-secondary text-decoration-none" href="#">Government</a></li>
-            <li><a class="link-secondary text-decoration-none" href="#">Gaming</a></li>
+            <li><a class="link-secondary text-decoration-none" href="#">О нас</a></li>
+            <li><a class="link-secondary text-decoration-none" href="#">Наши салоны</a></li>
+            <li><a class="link-secondary text-decoration-none" href="#">Отзывы клиентов</a></li>
+            <li><a class="link-secondary text-decoration-none" href="#">Контакты</a></li>
           </ul>
         </div>
+
         <div class="col-6 col-md">
-          <h5>About</h5>
+          <h5>Документы</h5>
           <ul class="list-unstyled text-small">
-            <li><a class="link-secondary text-decoration-none" href="#">Team</a></li>
-            <li><a class="link-secondary text-decoration-none" href="#">Locations</a></li>
-            <li><a class="link-secondary text-decoration-none" href="#">Privacy</a></li>
-            <li><a class="link-secondary text-decoration-none" href="#">Terms</a></li>
+            <li><a class="link-secondary text-decoration-none" href="#">Политика конфиденциальности</a></li>
+            <li><a class="link-secondary text-decoration-none" href="#">Пользовательское соглашение</a></li>
           </ul>
         </div>
       </div>
     </footer>
 
     <footer class="container">
-      <p class="float-end"><a href="#">Back to top</a></p>
-      <p>&copy; 2017–2024 Company, Inc. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
+      <p class="float-end"><a href="#">Наверх</a></p>
+      <p>&copy; 2013–2025 PremiumDrive &middot; <a href="#">Конфиденциальность</a> &middot; <a href="#">Условия</a></p>
     </footer>
-
 </body>
 </html>
